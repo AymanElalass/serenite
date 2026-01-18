@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sérénité | Blog & Analyse Médicale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #fdfdfd;
+            color: #1e293b;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .gradient-bg {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 0% 0%, #e0f2fe 0%, #f0f9ff 30%, #ffffff 100%);
+            z-index: -2;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+            height: 400px;
+        }
+
+        .blob {
+            position: fixed;
+            filter: blur(90px);
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .blob-1 { width: 500px; height: 500px; background: rgba(14, 165, 233, 0.1); top: -100px; right: -100px; }
+
+        .arrow-down { text-align: center; font-size: 1.5rem; color: #3b82f6; margin: 0.5rem 0; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="gradient-bg"></div>
+    <div class="blob blob-1"></div>
+
+    <nav class="fixed w-full z-50 px-6 py-6">
+        <div class="max-w-6xl mx-auto flex justify-between items-center glass rounded-[2rem] px-8 py-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold">S</div>
+                <span class="text-2xl font-bold tracking-tight text-slate-800">Sérénité</span>
+            </div>
+            <div class="hidden lg:flex items-center gap-10 text-sm font-semibold text-slate-500 uppercase tracking-widest">
+                <a href="index.html" class="hover:text-blue-600 transition">Accueil</a>
+                <a href="#problem" class="hover:text-blue-600 transition">Le Problème</a>
+                <a href="#solution" class="hover:text-blue-600 transition">La Solution</a>
+            </div>
+            <a href="index.html#contact" class="bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-blue-600 transition-all">
+                Pilote
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto pt-40 p-6 space-y-24">
+
+        <section class="text-center space-y-6">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-blue-600 text-xs font-black tracking-widest uppercase mb-4">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Étude & Data 2026
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-tight text-slate-900">
+                L'IA locale pour <br><span class="hero-gradient">sauver le système de santé.</span>
+            </h1>
+            <p class="text-xl text-slate-500 max-w-2xl mx-auto font-medium">
+                Analyse chiffrée de l'impact de Sérénité sur le quotidien des praticiens et la sécurité des données.
+            </p>
+        </section>
+
+        <section id="problem" class="space-y-12">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="md:w-1/2 space-y-6">
+                    <h2 class="text-3xl font-black text-slate-900">Une hémorragie de temps médical.</h2>
+                    <p class="text-slate-500 leading-relaxed">
+                        Aujourd'hui, près de 40% du temps d'un médecin est "volé" par la saisie administrative. Ce paradoxe du soin réduit le temps d'écoute et favorise l'épuisement.
+                    </p>
+                    <div class="glass p-6 rounded-3xl border-l-8 border-red-500">
+                        <p class="text-sm font-bold text-slate-700">"Le système souffre d'une surcharge administrative chronique que seule une automatisation souveraine peut résoudre."</p>
+                    </div>
+                </div>
+                <div class="md:w-1/2 chart-container">
+                    <canvas id="timeDistributionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="solution" class="glass p-12 rounded-[3.5rem] space-y-12">
+            <div class="text-center space-y-4">
+                <h2 class="text-3xl font-black text-slate-900">Flux Traditionnel vs Sérénité</h2>
+                <p class="text-slate-500">Pourquoi l'IA locale (Edge Computing) change tout.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="w-full bg-red-50 p-6 rounded-[2rem] border border-red-100 text-center">
+                            <span class="text-3xl">☁️</span>
+                            <h4 class="font-black text-red-800 mt-2 text-sm">Solutions Cloud</h4>
+                            <p class="text-[10px] text-red-600">Données externalisées</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="w-full bg-red-50 p-6 rounded-[2rem] border border-red-100 text-center">
+                            <h4 class="font-black text-red-800 text-sm">Risques RGPD</h4>
+                            <p class="text-[10px] text-red-600">Latence & Dépendance</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="w-full bg-blue-600 p-6 rounded-[2rem] text-center shadow-xl shadow-blue-200">
+                            <span class="text-3xl">🔒</span>
+                            <h4 class="font-black text-white mt-2 text-sm">Sérénité Local</h4>
+                            <p class="text-[10px] text-blue-100">Traitement on-device</p>
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="w-full bg-blue-600 p-6 rounded-[2rem] text-center shadow-xl shadow-blue-200">
+                            <h4 class="font-black text-white text-sm">Confidentialité</h4>
+                            <p class="text-[10px] text-blue-100">Zéro latence, 100% Privé</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <div id="plotlyDiv" class="w-full h-full"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="chart-container">
+                <canvas id="roiChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="timeSavedChart"></canvas>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-blue-600 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-blue-200">
+                <div class="text-5xl font-black mb-2">15h</div>
+                <div class="font-bold opacity-80 uppercase text-xs tracking-widest">Gagnées / Semaine</div>
+            </div>
+            <div class="glass rounded-[2.5rem] p-8 text-slate-800">
+                <div class="text-5xl font-black mb-2 text-blue-600">100%</div>
+                <div class="font-bold opacity-60 uppercase text-xs tracking-widest">Souveraineté</div>
+            </div>
+            <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white">
+                <div class="text-5xl font-black mb-2 text-blue-400">x5</div>
+                <div class="font-bold opacity-80 uppercase text-xs tracking-widest">ROI à 3 ans</div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="py-12 text-center text-slate-400 text-xs font-bold">
+        © 2026 Sérénité • Intelligence Artificielle Locale • Villeneuve-d'Ascq
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Graphique 1: Temps
+        new Chart(document.getElementById('timeDistributionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Soins', 'Administratif', 'Recherche', 'Coordination'],
+                datasets: [{
+                    data: [45, 40, 10, 5],
+                    backgroundColor: ['#2563eb', '#ef4444', '#0ea5e9', '#94a3b8'],
+                    borderWidth: 0
+                }]
+            },
+            options: { 
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } } 
+            }
+        });
+
+        // Plotly 3D
+        const zData = Array.from({length: 20}, (_, i) => Array.from({length: 20}, (_, j) => Math.sin(i/5) * Math.cos(j/5) * 20 + 50));
+        Plotly.newPlot('plotlyDiv', [{ z: zData, type: 'surface', colorscale: 'Blues', showscale: false }], 
+        { 
+            margin: { l: 0, r: 0, b: 0, t: 0 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            scene: { xaxis: {visible: false}, yaxis: {visible: false}, zaxis: {visible: false} }
+        }, { responsive: true, displayModeBar: false });
+
+        // Graphique 3: ROI
+        new Chart(document.getElementById('roiChart'), {
+            type: 'line',
+            data: {
+                labels: ['An 1', 'An 2', 'An 3', 'An 4', 'An 5'],
+                datasets: [{
+                    label: 'Économies (Sérénité)',
+                    data: [15, 45, 90, 150, 220],
+                    borderColor: '#2563eb',
+                    fill: true,
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: { maintainAspectRatio: false }
+        });
+
+        // Graphique 4: Gain de temps
+        new Chart(document.getElementById('timeSavedChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Sans IA', 'Avec Sérénité'],
+                datasets: [
+                    { label: 'Admin', data: [40, 5], backgroundColor: '#ef4444' },
+                    { label: 'Temps Patient', data: [60, 95], backgroundColor: '#10b981' }
+                ]
+            },
+            options: { 
+                maintainAspectRatio: false,
+                scales: { x: {stacked: true}, y: {stacked: true} }
+            }
+        });
+    </script>
+</body>
+</html>
